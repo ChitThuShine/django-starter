@@ -20,15 +20,15 @@ Instructions for setting up a virual enviornment for your platform can be found 
 
 #### PIP Dependencies
 
-Once you have your virtual environment setup and run the following to install requirement:
+Once you have your virtual environment setup, run the following to install the project requirements:
 
 ```bash
 pip install -r requirements.txt
 ```
 
 ##### DB Dependencies
-- You need to have a postgres DB running in your environment. 
-[See this tutorial](https://www.postgresqltutorial.com/install-postgresql/)
+- You need to have a postgres DB running in your environment.  
+[See this tutorial on how to install](https://www.postgresqltutorial.com/install-postgresql/).
 
 
 ## Running the server
