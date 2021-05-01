@@ -1,5 +1,5 @@
 """
-WSGI config for github_actions project.
+WSGI config for advantch project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
