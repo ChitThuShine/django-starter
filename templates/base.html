@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Food Solutions</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2/dist/tailwind.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@1.6.0/dist/full.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+     <link href="{% static '/styles/main.css' %}" rel="stylesheet">
+
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/@ryangjchandler/alpine-clipboard@2.x.x/dist/alpine-clipboard.js"
+      defer
+    ></script>
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    {% block head_css %}{% endblock %}
+
+  </head>
+  <body x-data>
+    <div class="h-screen flex flex-col">
+      {% include "components/navbar.html" %}
+      <div class="rounded-lg shadow bg-base-200 drawer drawer-mobile h-full">
+        <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
+        <div class="flex flex-col drawer-content">
+          <label id="toggleNav" for="my-drawer-2" class="hidden"></label>
+          {% block page_content %} {% endblock %}
+        </div>
+        <div class="drawer-side">
+          <label for="my-drawer-2" class="drawer-overlay"></label>
+          <ul
+            class="menu p-4 overflow-y-auto w-80 bg-base-100 text-base-content"
+          >
+            <li>
+              <a href="/">🏠 Home</a>
+            </li>
+            <li>
+              <a href="/accounts/">📒 Accounts</a>
+            </li>
+            <li>
+              <a href="/file_manager/">🗄️ Saved Files</a>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% block footer_js %}
+    <script>
+      const pages = {
+          home: {name: 'home', id: 1},
+          upload: {name: 'upload', id: 2},
+          editor: {name: 'editor', id: 3},
+          browser: {name: 'browser', id: 4}
+      }
+
+      document.addEventListener("alpine:init", () => {
+        Alpine.store("app", {
+          page: pages.home,
+          ui: {
+            showGoogleSheetFileModal: false,
+          },
+          showFileOptions: false,
+          sourceToClipboard() {
+            return window.editor.getModel().getValue();
+          },
+          switchPage(key) {
+            this.page = pages[key];
+            console.info(key, "switch page");
+          },
+        });
+      });
+    </script>
+    {% endblock %}
+  </body>
+</html>

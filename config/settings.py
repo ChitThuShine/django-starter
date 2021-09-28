@@ -3,6 +3,9 @@ Django settings for advantch stater project.
 """
 
 import os
+from huey import RedisHuey
+from huey.api import SqliteHuey
+from redis import ConnectionPool
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +28,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core.apps.CoreConfig'
+
+    'huey.contrib.djhuey', 
+    'bx_django_utils', # https://github.com/boxine/bx_django_utils
+    'huey_monitor',
+
+    'core.apps.CoreConfig',
+    'apps.accounts.apps.AccountsConfig'
 ]
 
 MIDDLEWARE = [
@@ -43,7 +52,9 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, "templates")
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -64,12 +75,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'shopdash',
     }
 }
 
@@ -77,12 +84,8 @@ DATABASES = {
 if os.environ.get('GITHUB_WORKFLOW'):
     DATABASES = {
         'default': {
-           'ENGINE': 'django.db.backends.postgresql',
+           'ENGINE': 'django.db.backends.sqlite',
            'NAME': 'postgres',
-           'USER': 'postgres',
-           'PASSWORD': 'postgres',
-           'HOST': '127.0.0.1',
-           'PORT': '5432',
         }
     }
 
@@ -124,3 +127,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+if DEBUG:
+    print(BASE_DIR)
+    HUEY = SqliteHuey('my_app', filename=os.path.join(BASE_DIR, 'huey.db'))
+else:
+    REDIS_URL = os.getenv("REDIS_URL", default="")
+    pool = ConnectionPool(url=REDIS_URL, max_connections=20)
+    HUEY = RedisHuey('my-app', connection_pool=pool)
